@@ -1,0 +1,13 @@
+อ้างอิงการใช้งาน API Facebook: https://developers.facebook.com/documentation/pages-api
+
+package
+   gin
+      go get github.com/gin-gonic/gin
+   dotenv
+      go get github.com/joho/godotenv
+
+   facebook
+      go get github.com/huandu/facebook/v2
+      
+   time // สำหรับจัดการค่าเวลาต่าง ๆ เช่น เวลาปัจจุบัน
+      go get time
