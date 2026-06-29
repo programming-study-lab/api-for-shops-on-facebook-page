@@ -8,3 +8,6 @@ type ContentPost struct {
 	Published            string    `json:"published"`
 	ScheduledPublishTime time.Time `json:"sheduledPublishTime"`
 }
+
+type ConversationsModel struct {
+}

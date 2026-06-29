@@ -3,58 +3,59 @@
 ## ข้อมูล Facebook page
 ***Request Body:***
 ```
-curl -X POST http://localhost:5000/api/v1/send-message \
-  -H "Content-Type: application/json" \
-  -d '{
-        "recipient":{
-            "id": "<facebook_id>"
-        },
-        "messaging_type": "RESPONSE",
-        "message":{
-            "text": "Hello World"
-        }
-    }'
+curl -X POST http://localhost:5000/api/v1/get-info'
 ```
 ***Response:***
 ```
 {
+  "status": true,
+  "message": "success",
+  "data": {
     "name": "<facebook_page_name>",
     "id": "<facebook_page_id>"
+  }
 }
 ```
-## ดูรายการ conversion id ของเพจ
+## ดูรายการ conversation id ของเพจ
 ***Request Body:***
 ```
-curl -i -X GET "http://localhost:5000/api/v1/conversations
+curl -i -X GET "http://localhost:5000/api/v1/get-conversations
     ?platform=messages
 ```
 ***Response:***
 ```
 {
-  "messages": {
-    "data": [
-      {
-        "id": "Message ID-1",
-        "created_time": "UNIX-TIMESTAMP-MOST-RECENT-MESSAGE"
+  "data: [
+    {
+      "id": "conversation_id",
+      "participants": {
+        "data": [
+          {
+            "email": "<id>@facebook.com",
+            "id": "facebook_id",
+            "name": "<customer>"
+          },
+          {
+            "email": "<id>@facebook.com",
+            "id": "facebook_id",
+            "name": "<facebook_page>"
+          }
+        ]
       },
-      {
-        "id": "Message ID-2",
-        "created_time": "UNIX-TIMESTAMP"
-      },
-      {
-        "id": "Message ID-3",
-        "created_time": "UNIX-TIMESTAMP"
-      },
-...
-    ]
-  },
-  "id": "Conversation ID",
+      "updated_time": "<updated_time>"
+    }
+    ...
+    {
+      "id": "conversation_id",
+      ....
+    }
+  ]
 }
 ```
-## ดูเนื้อหาแชท จาก conversion id
+## ดูเนื้อหาแชท จาก conversation id
 ***Request Body:***
 ```
-curl -i -X GET "http://localhost:5000/api/v1/<conversion_id>/message
+curl -i -X GET "http://localhost:5000/api/v1/get-message/<conversation_id>
     ?fields=message,from,created_time
 ```
 ***Response:***
