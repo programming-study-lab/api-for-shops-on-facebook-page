@@ -1,16 +1,15 @@
 package main
 
 import (
-	"api-for-shops-on-facebook-page/configs"
-	"api-for-shops-on-facebook-page/routers"
-
-	"github.com/gin-gonic/gin"
+	"api-for-shops-on-facebook-page/public"
 )
 
 func main() {
-	r := gin.Default()
+	// r := gin.Default()
 
-	routers.FacebookAPI(r)
+	// routers.FacebookAPI(r)
 
-	r.Run(configs.LoadEnv().Port_Host)
+	// r.Run(configs.LoadEnv().AppPort)
+
+	public.Index()
 }

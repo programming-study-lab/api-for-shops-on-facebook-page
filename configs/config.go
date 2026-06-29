@@ -6,16 +6,16 @@ import (
 	"github.com/joho/godotenv"
 )
 
-type Domain struct {
-	URL_Host  string `json:"url_host"`
-	Port_Host string `json:"port_host"`
+type AppUrl struct {
+	AppUrl  string `json:"appUrl"`
+	AppPort string `json:"appPort"`
 }
 
-func LoadEnv() *Domain {
+func LoadEnv() *AppUrl {
 	godotenv.Load()
 
-	return &Domain{
-		URL_Host:  os.Getenv("URL_HOST"),
-		Port_Host: os.Getenv("PORT_HOST"),
+	return &AppUrl{
+		AppUrl:  os.Getenv("APP_URL"),
+		AppPort: os.Getenv("APP_PORT"),
 	}
 }
