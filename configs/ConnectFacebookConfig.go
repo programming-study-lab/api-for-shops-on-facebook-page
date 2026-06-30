@@ -8,10 +8,11 @@ import (
 )
 
 type FacebookAuthApi struct {
-	VersionGraph   string `json:"versionGraph"`
-	AccessToken    string `json:"AccessToken"`
-	FacebookPageId string `json:"facebookPageId"`
-	FacebookAPi    string `json:"facebookApi"`
+	VersionGraph         string `json:"versionGraph"`
+	AccessToken          string `json:"AccessToken"`
+	FacebookPageId       string `json:"facebookPageId"`
+	FacebookAPi          string `json:"facebookApi"`
+	FacebookWebhookToken string `json:"facebookWebhookToken"`
 }
 
 func ConnectFacebookGraphApi() *FacebookAuthApi {
@@ -20,9 +21,10 @@ func ConnectFacebookGraphApi() *FacebookAuthApi {
 	fb.Version = os.Getenv("FACEBOOK_GRAPH_VERSION")
 
 	return &FacebookAuthApi{
-		VersionGraph:   os.Getenv("FACEBOOK_GRAPH_VERSION"),
-		AccessToken:    os.Getenv("FACEBOOK_ACCESS_TOKEN"),
-		FacebookPageId: os.Getenv("FACEBOOK_PAGE_ID"),
-		FacebookAPi:    os.Getenv("FACEBOOK_API"),
+		VersionGraph:         os.Getenv("FACEBOOK_GRAPH_VERSION"),
+		AccessToken:          os.Getenv("FACEBOOK_ACCESS_TOKEN"),
+		FacebookPageId:       os.Getenv("FACEBOOK_PAGE_ID"),
+		FacebookAPi:          os.Getenv("FACEBOOK_API"),
+		FacebookWebhookToken: os.Getenv("FACEBOOK_WEBHOOK_TOKEN"),
 	}
 }

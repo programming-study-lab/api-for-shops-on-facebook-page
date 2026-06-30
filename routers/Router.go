@@ -21,6 +21,9 @@ func FacebookAPI(r *gin.Engine) {
 
 		api.GET("/get-image/:image_name", controllers.GetImage)
 		api.POST("/upload-image", controllers.UploadImage)
+
+		api.GET("/webhook", controller.GetWebhookController)
+		api.POST("/webhook", controller.PostWebhookController)
 	}
 
 }

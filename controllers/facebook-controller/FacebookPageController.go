@@ -1,4 +1,4 @@
-package controller
+package facebookcontroller
 
 import (
 	"api-for-shops-on-facebook-page/configs"
@@ -115,4 +115,62 @@ func FacebookPageGetMessages(ctx *gin.Context) {
 
 func FacebookPageSendMessage(ctx *gin.Context) {
 
+}
+
+func GetWebhookController(ctx *gin.Context) {
+	mode := ctx.Query("hub.mode")
+	webhook_token := ctx.Query("hub.verify_token")
+	challenge := ctx.Query("hub.challenge")
+
+	fbConfig := configs.ConnectFacebookGraphApi()
+
+	if mode == "subscribe" && webhook_token == fbConfig.FacebookWebhookToken {
+		ctx.String(
+			http.StatusOK,
+			challenge,
+		)
+		return
+	}
+
+	ctx.Status(
+		http.StatusForbidden,
+	)
+}
+
+func PostWebhookController(ctx *gin.Context) {
+	var body map[string]interface{}
+
+	err := ctx.ShouldBindJSON(&body)
+
+	if err != nil {
+		ctx.Status(
+			http.StatusBadGateway,
+		)
+
+		// fmt.Printf("\n[facebook] error = %s\n", err.Error())
+		return
+	}
+
+	// ctx.AbortWithStatusJSON(
+	// 	http.StatusOK,
+	// 	gin.H{
+	// 		"status":  true,
+	// 		"message": "EVENT_RECEVIVED",
+	// 		"data":    &body,
+	// 	},
+	// )
+	// d := []byte
+
+	// data, _ := json.Marshal(body)
+
+	// fmt.Printf("\n%s\n\n", string(data))
+
+	fmt.Printf("\n[Webhooks] ---\n\n")
+
+	ctx.String(
+		http.StatusOK,
+		"EVENT_RECEVIVED",
+	)
+
+	// fmt.Printf("\n[facebook] EVENT_RECEVIVED = %s\n", body)
 }

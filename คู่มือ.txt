@@ -1,4 +1,5 @@
 อ้างอิงการใช้งาน API Facebook: https://developers.facebook.com/documentation/pages-api
+นโยบายการใช้งาน Webhooks messenger: https://developers.facebook.com/documentation/business-messaging/messenger-platform/app-review
 
 package
    gin
