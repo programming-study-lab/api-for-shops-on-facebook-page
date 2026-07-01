@@ -22,7 +22,7 @@ func CheckApi(ctx *gin.Context) {
 }
 
 func OnTest(ctx *gin.Context) {
-	fbConfig := configs.ConnectFacebookGraphApi()
+	fbConfig := configs.FacebookConfig()
 
 	res, err := facebook.Get("/me", facebook.Params{
 		"fields":       "id,name",

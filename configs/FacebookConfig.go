@@ -1,9 +1,9 @@
 package configs
 
 import (
+	"log"
 	"os"
 
-	fb "github.com/huandu/facebook/v2"
 	"github.com/joho/godotenv"
 )
 
@@ -11,20 +11,22 @@ type FacebookAuthApi struct {
 	VersionGraph         string `json:"versionGraph"`
 	AccessToken          string `json:"AccessToken"`
 	FacebookPageId       string `json:"facebookPageId"`
-	FacebookAPi          string `json:"facebookApi"`
+	FacebookAPI          string `json:"facebookApi"`
 	FacebookWebhookToken string `json:"facebookWebhookToken"`
 }
 
-func ConnectFacebookGraphApi() *FacebookAuthApi {
-	godotenv.Load()
+func FacebookConfig() *FacebookAuthApi {
+	err := godotenv.Load()
 
-	fb.Version = os.Getenv("FACEBOOK_GRAPH_VERSION")
+	if err != nil {
+		log.Println("ไม่พบไฟล์ .env")
+	}
 
 	return &FacebookAuthApi{
 		VersionGraph:         os.Getenv("FACEBOOK_GRAPH_VERSION"),
 		AccessToken:          os.Getenv("FACEBOOK_ACCESS_TOKEN"),
 		FacebookPageId:       os.Getenv("FACEBOOK_PAGE_ID"),
-		FacebookAPi:          os.Getenv("FACEBOOK_API"),
+		FacebookAPI:          os.Getenv("FACEBOOK_API"),
 		FacebookWebhookToken: os.Getenv("FACEBOOK_WEBHOOK_TOKEN"),
 	}
 }

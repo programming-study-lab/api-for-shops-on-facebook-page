@@ -24,6 +24,8 @@ func FacebookAPI(r *gin.Engine) {
 
 		api.GET("/webhook", controller.GetWebhookController)
 		api.POST("/webhook", controller.PostWebhookController)
+
+		api.POST("/send-message", controller.FacebookPageSendMessage)
 	}
 
 }

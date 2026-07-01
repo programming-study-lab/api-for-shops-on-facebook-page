@@ -3,7 +3,7 @@
 ## ข้อมูล Facebook page
 ***Request Body:***
 ```
-curl -X POST http://localhost:5000/api/v1/get-info'
+curl -X GET http://localhost:5000/api/v1/get-info
 ```
 ***Response:***
 ```
@@ -19,8 +19,7 @@ curl -X POST http://localhost:5000/api/v1/get-info'
 ## ดูรายการ conversation id ของเพจ
 ***Request Body:***
 ```
-curl -i -X GET "http://localhost:5000/api/v1/get-conversations
-    ?platform=messages
+curl -i -X GET http://localhost:5000/api/v1/get-conversations
 ```
 ***Response:***
 ```
@@ -56,7 +55,6 @@ curl -i -X GET "http://localhost:5000/api/v1/get-conversations
 ***Request Body:***
 ```
 curl -i -X GET "http://localhost:5000/api/v1/get-message/<conversation_id>
-    ?fields=message,from,created_time
 ```
 ***Response:***
 ```
@@ -90,12 +88,11 @@ curl -i -X GET "http://localhost:5000/api/v1/get-message/<conversation_id>
 curl -X POST http://localhost:5000/api/v1/send-message \
   -H "Content-Type: application/json" \
   -d '{
-        "recipient":{
-            "id": "<facebook_id>"
-        },
-        "messaging_type": "RESPONSE",
-        "message":{
-            "text": "Hello World"
+        "recipientId":"<customer _id>",
+        "messagingType":"RESPONSE",
+        "messageText": "<ข้อความ>",
+        "media": {
+          "type": "<image | vieo>
         }
     }'
 ```
