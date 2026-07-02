@@ -4,6 +4,8 @@ import (
 	"api-for-shops-on-facebook-page/configs"
 	facebookmodel "api-for-shops-on-facebook-page/models/facebook-model"
 	facebookservices "api-for-shops-on-facebook-page/services/facebook-service"
+	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -97,6 +99,7 @@ func FacebookPageGetConversations(ctx *gin.Context) {
 }
 
 func FacebookPageGetMessages(ctx *gin.Context) {
+
 	session, err := facebookservices.FacebookInit()
 
 	if err != nil {
@@ -158,8 +161,11 @@ func FacebookPageSendMessage(ctx *gin.Context) {
 		return
 	}
 
-	messageModel := facebookmodel.MessageModel{}
-	if err := ctx.ShouldBindJSON(&messageModel); err != nil {
+	messageModel := facebookmodel.MessageRequestModel{}
+	if err := ctx.ShouldBind(&messageModel); err != nil {
+
+		log.Printf("\n[json] %v,\n", messageModel)
+
 		ctx.AbortWithStatusJSON(
 			http.StatusBadRequest,
 			gin.H{
@@ -168,69 +174,148 @@ func FacebookPageSendMessage(ctx *gin.Context) {
 				"data":    err.Error(),
 			},
 		)
+		fmt.Printf("\ntest\n")
 		return
 	}
 
-	facebookMessageModel := make(map[string]interface{})
+	facebookMessageModel := facebookmodel.FacebookMessageModelBase{}
 
-	if messageModel.MediaType == "image" {
-		facebookMessageModel = facebookmodel.FacebookMessageAttachment{
-			AttachmentType: messageModel.MediaType,
-			Payload: facebookmodel.AttachmentPayload{
-				facebookmodel.AttachmentIsReusable{
+	if messageModel.MediaType == "image" || messageModel.MediaType == "video" {
+
+		// ทำให้เป็น string ก่อนส่งไปยัง facebook
+		recipientId, err := json.Marshal(facebookmodel.Recipient{
+			Id: messageModel.RecipientId,
+		})
+
+		if err != nil {
+			ctx.AbortWithStatusJSON(
+				http.StatusBadRequest,
+				gin.H{
+					"status":  false,
+					"message": "เกิดความผิดปกติเกี่ยวกับข้อมูลใน Recipient",
+					"data":    err.Error(),
+				},
+			)
+			return
+		}
+
+		// ทำให้เป็น string ก่อนส่งไปยัง facebook
+		messageAttachment, err := json.Marshal(facebookmodel.Message{
+			Attachment: facebookmodel.Attachment{
+				AttachmentType: messageModel.MediaType,
+				Payload: facebookmodel.AttachmentPayload{
 					IsReusable: true,
 				},
 			},
-		}
-	} else if messageModel.MediaType == "video" {
+		})
 
+		if err != nil {
+			ctx.AbortWithStatusJSON(
+				http.StatusBadRequest,
+				gin.H{
+					"status":  false,
+					"message": "เกิดความผิดปกติเกี่ยวกับข้อมูลใน Message",
+					"data":    err.Error(),
+				},
+			)
+			return
+		}
+
+		file, err := messageModel.Filedata.Open()
+		if err != nil {
+			ctx.AbortWithStatusJSON(
+				http.StatusBadRequest,
+				gin.H{
+					"status":  false,
+					"message": "เกิดความผิดปกติเกี่ยวกับไฟล์ที่ส่งมา",
+					"data":    err.Error(),
+				},
+			)
+			return
+		}
+
+		facebookMessageModel = facebookmodel.FacebookMessageModelBase{
+			FacebookSendMessageAttachmentModel: facebookmodel.FacebookSendMessageAttachmentModel{
+				Recipient: string(recipientId),
+				Message:   string(messageAttachment),
+				Filedata:  facebook.Data(messageModel.Filedata.Filename, file),
+			},
+		}
 	} else {
-		&facebookMessageModel = facebookmodel.FacebookMessageModel{
-			Recipient: facebookmodel.FacebookId{
-				Id: messageModel.RecipientId,
-			},
-			MessagingType: "RESPONSE",
-			Message: facebookmodel.FacebookMessageText{
-				Text: messageModel.MessageText,
+		facebookMessageModel = facebookmodel.FacebookMessageModelBase{
+			FacebookMessageModel: facebookmodel.FacebookMessageModel{
+				Recipient: facebookmodel.FacebookId{
+					Id: messageModel.RecipientId,
+				},
+				MessagingType: "RESPONSE",
+				Message: facebookmodel.FacebookMessageText{
+					Text: messageModel.MessageText,
+				},
 			},
 		}
-
 	}
 
-	// facebookMessageModel := facebookmodel.FacebookMessageModel{
-	// 	Recipient: facebookmodel.FacebookId{
-	// 		Id: messageModel.RecipientId,
-	// 	},
-	// 	MessagingType: "RESPONSE",
-	// 	Message: facebookmodel.FacebookMessageText{
-	// 		Text: messageModel.MessageText,
-	// 	},
-	// }
+	if messageModel.MediaType == "image" || messageModel.MediaType == "video" {
 
-	res, err := session.Post("/me/messages", facebook.MakeParams(facebookMessageModel))
-	if err != nil {
+		res, err := session.Post("/me/messages", facebook.Params{
+			"recipient": facebookMessageModel.FacebookSendMessageAttachmentModel.Recipient,
+			"message":   facebookMessageModel.FacebookSendMessageAttachmentModel.Message,
+			"filedata":  facebookMessageModel.FacebookSendMessageAttachmentModel.Filedata,
+		})
+
+		if err != nil {
+			ctx.AbortWithStatusJSON(
+				http.StatusBadRequest,
+				gin.H{
+					"status":  false,
+					"message": "เกิดความผิดปกติขณะส่งข้อมูลไปยัง Facebook",
+					"data":    err.Error(),
+				},
+			)
+			return
+		}
+
 		ctx.AbortWithStatusJSON(
-			http.StatusBadRequest,
+			http.StatusOK,
 			gin.H{
-				"status":  false,
-				"message": "error",
-				"data":    err.Error(),
+				"status":  true,
+				"message": "success",
+				"data": gin.H{
+					"recipientId":   res.GetField("recipient_id"),
+					"messageId":     res.GetField("message_id"),
+					"attachment_id": res.GetField("attachment_id"),
+				},
 			},
 		)
-		return
-	}
+	} else {
 
-	ctx.AbortWithStatusJSON(
-		http.StatusOK,
-		gin.H{
-			"status":  true,
-			"message": "success",
-			"data": gin.H{
-				"recipientId": res.GetField("recipient_id"),
-				"messageId":   res.GetField("message_id"),
+		res, err := session.Post("/me/messages", facebook.MakeParams(facebookMessageModel.FacebookMessageModel))
+
+		if err != nil {
+			ctx.AbortWithStatusJSON(
+				http.StatusBadRequest,
+				gin.H{
+					"status":  false,
+					"message": "error",
+					"data":    err.Error(),
+				},
+			)
+			return
+		}
+
+		ctx.AbortWithStatusJSON(
+			http.StatusOK,
+			gin.H{
+				"status":  true,
+				"message": "success",
+				"data": gin.H{
+					"recipientId": res.GetField("recipient_id"),
+					"messageId":   res.GetField("message_id"),
+				},
 			},
-		},
-	)
+		)
+
+	}
 
 }
 
