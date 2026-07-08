@@ -13,6 +13,7 @@ import (
 	"github.com/huandu/facebook/v2"
 )
 
+// ดึงข้อมูลของเพจ เช่น ชื่อเพจ, id page
 func FacebookPageGetInfo(ctx *gin.Context) {
 	session, err := facebookservices.FacebookInit()
 
@@ -57,6 +58,7 @@ func FacebookPageGetInfo(ctx *gin.Context) {
 	)
 }
 
+// ดึงข้อมูลการสนทนาของเพจ Facebook
 func FacebookPageGetConversations(ctx *gin.Context) {
 	session, err := facebookservices.FacebookInit()
 
@@ -98,6 +100,7 @@ func FacebookPageGetConversations(ctx *gin.Context) {
 	)
 }
 
+// ดึงข้อความแชทของเพจแชทกับแชทกับลูกค้า
 func FacebookPageGetMessages(ctx *gin.Context) {
 
 	session, err := facebookservices.FacebookInit()
@@ -119,8 +122,7 @@ func FacebookPageGetMessages(ctx *gin.Context) {
 	path := "/" + conversation_id + "/messages"
 
 	res, err := session.Get(path, facebook.Params{
-		"fields": "id,created_time,from,to,message,reply_to",
-		// "fields": "id,created_time,from,to,message,reply_to",
+		"fields": "id,created_time,from,to,message,reply_to,attachments",
 	})
 
 	if err != nil {
@@ -145,6 +147,7 @@ func FacebookPageGetMessages(ctx *gin.Context) {
 	)
 }
 
+// ส่งข้อความแชทไปยังลูกค้า
 func FacebookPageSendMessage(ctx *gin.Context) {
 
 	session, err := facebookservices.FacebookInit()
@@ -227,7 +230,7 @@ func FacebookPageSendMessage(ctx *gin.Context) {
 				http.StatusBadRequest,
 				gin.H{
 					"status":  false,
-					"message": "เกิดความผิดปกติเกี่ยวกับไฟล์ที่ส่งมา",
+					"message": "เกิดความผิดปกติเกี่ยวกับไฟล์ที่ส่งมายัง Server กลาง",
 					"data":    err.Error(),
 				},
 			)
@@ -296,7 +299,7 @@ func FacebookPageSendMessage(ctx *gin.Context) {
 				http.StatusBadRequest,
 				gin.H{
 					"status":  false,
-					"message": "error",
+					"message": "เกิดความผิดปกติในการส่งข้อความไปยัง Facebook",
 					"data":    err.Error(),
 				},
 			)
@@ -319,6 +322,7 @@ func FacebookPageSendMessage(ctx *gin.Context) {
 
 }
 
+// ตรวสอบยืนยันการทำงานของ webhooks
 func GetWebhookController(ctx *gin.Context) {
 	mode := ctx.Query("hub.mode")
 	webhook_token := ctx.Query("hub.verify_token")
@@ -339,6 +343,7 @@ func GetWebhookController(ctx *gin.Context) {
 	)
 }
 
+// รับข้อความจาก web hooks เช่น การแจ้งเตือน
 func PostWebhookController(ctx *gin.Context) {
 	var body map[string]interface{}
 

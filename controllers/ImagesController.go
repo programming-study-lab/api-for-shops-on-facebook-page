@@ -8,11 +8,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// แสดงรูปภาพ
 func GetImage(ctx *gin.Context) {
 	image_name := ctx.Param("image_name")
-	ctx.File("./public/assets/images/" + image_name)
+	ctx.File("public/assets/images/" + image_name)
 }
 
+// อัพโหลดรูปภาพ
 func UploadImage(ctx *gin.Context) {
 	file, err := ctx.FormFile("image")
 	if err == nil {
@@ -30,7 +32,7 @@ func UploadImage(ctx *gin.Context) {
 			return
 		} else {
 			newFileName := time.Now().Format("") + "_" + file.Filename
-			dst := filepath.Join("/public-v2/assets/images", newFileName)
+			dst := filepath.Join("public/assets/images", newFileName)
 
 			if err := ctx.SaveUploadedFile(file, dst); err == nil {
 				// imageUrl := "path: /public/assets/images/<iamge_name>"

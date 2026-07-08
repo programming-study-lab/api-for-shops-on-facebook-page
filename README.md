@@ -24,31 +24,33 @@ curl -i -X GET http://localhost:5000/api/v1/get-conversations
 ***Response:***
 ```
 {
-  "data: [
-    {
-      "id": "conversation_id",
-      "participants": {
-        "data": [
-          {
-            "email": "<id>@facebook.com",
-            "id": "facebook_id",
-            "name": "<customer>"
+  "status": true,
+  "message": "success",
+  "data": [
+        {
+          "id": "conversation_id",
+          "participants": {
+            "data": [
+              {
+                "email": "<id>@facebook.com",
+                "id": "facebook_id",
+                "name": "<customer>"
+              },
+              {
+                "email": "<id>@facebook.com",
+                "id": "facebook_id",
+                "name": "<facebook_page>"
+              }
+            ]
           },
-          {
-            "email": "<id>@facebook.com",
-            "id": "facebook_id",
-            "name": "<facebook_page>"
-          }
-        ]
-      },
-      "updated_time": "<updated_time>"
-    }
-    ...
-    {
-      "id": "conversation_id",
-      ....
-    }
-  ]
+          "updated_time": "<updated_time>"
+        }
+        ...
+        {
+          "id": "conversation_id",
+          ....
+        }
+      ]
 }
 ```
 ## ดูเนื้อหาแชท จาก conversation id
@@ -59,26 +61,56 @@ curl -i -X GET "http://localhost:5000/api/v1/get-message/<conversation_id>
 ***Response:***
 ```
 {
+  "status": true,
+  "message": "success",
   "data": [
-    {
-      "message": "ราคาเท่าไหร่ครับ", // ข้อความที่ลูกค้าพิมพ์มา
-      "from": {
-        "name": "ชื่อลูกค้า",
-        "id": "<PSID_ของลูกค้า>"
+      {
+        "attachments": {
+          "data": [
+            {
+              "id": "<facebook id>",
+              "image_data": {
+                "height": "<number>",
+                "image_type": "<number>",
+                "max_height": "<number>",
+                "max_width": "<number>",
+                "preview_url": "preview_url",
+                "render_as_sticker": "boolean: true, false",
+                "url": "<image_path>",
+                "width": "<number>"
+              },
+              "mime_type": "image/jpeg",
+              "name": "<image_name>",
+              "size": "<image_size>"
+            }
+          ],
+          "paging": {
+            "cursors": {
+              "after": "MAZDZD",
+              "before": "MAZDZD"
+            },
+            "next": "<api หน้าถัดไปของข้อมูล>"
+          }
+        },
+        "created_time": "<time>",
+        "from": {
+          "email": "<facebook id>@facebook.com",
+          "id": "<facebook id>",
+          "name": "ชื่อเพจ (ผู้ส่งข้อความ)"
+        },
+        "id": "message_id",
+        "message": "<ข้อความ>",
+        "to": {
+          "data": [
+            {
+              "email": "<facebook id>@facebook.com",
+              "id": "<facebook id>",
+              "name": "<ชื่อ facebook (ผู้รับข้อความ)>"
+            }
+          ]
+        }
       },
-      "created_time": "2026-06-28T10:30:00+0000",
-      "id": "m_mid.14586453..."
-    },
-    {
-      "message": "สวัสดีครับ ยินดีต้อนรับครับ", // ข้อความที่เพจตอบกลับ
-      "from": {
-        "name": "ชื่อเพจของคุณ",
-        "id": "<PAGE_ID>"
-      },
-      "created_time": "2026-06-28T10:31:00+0000",
-      "id": "m_mid.14586454..."
-    }
-  ]
+    ]
 }
 
 ```
@@ -88,21 +120,46 @@ curl -i -X GET "http://localhost:5000/api/v1/get-message/<conversation_id>
 curl -X POST http://localhost:5000/api/v1/send-message \
   -H "Content-Type: application/json" \
   -d '{
-        "recipientId":"<customer _id>",
-        "messagingType":"RESPONSE",
+        "recipientId":"<facebook_id>",
         "messageText": "<ข้อความ>",
-        "media": {
-          "type": "<image | vieo>
-        }
+        "mediaType": "<ส่งข้อความไม่ใส่ก็ได้>"
     }'
 ```
 ***Response:***
 ```
 {
+  "status": true,
+  "message": "success",
+  "data": {
     "recipient_id": <facebook_id>,
     "message_id": "<message_id>"
+  }
 }
 ```
+## ส่งรูปภาพถึงลูกค้าของเพจ
+***Request Body:***
+```
+curl -X POST "http://localhost:5000/api/v1/send-message" \
+  -F "mediaType=<ประเภทของข้อมูลที่จะส่ง เช่น image, video, message>" \
+  -F "recipientId=<facebook_id>" \
+  -F "filedata=@/Users/<username>/<Pictures>/<beach.png>"
+```
+***Response:***
+```
+{
+  "status": true,
+  "message": "success",
+  "data": {
+    "recipientId": <facebook_id>,
+    "messageId": "<message_id>",
+    "attachmentId": "<attachmentId>"
+  }
+}
+```
+
+# -------------------------------------------------------
+# ไม่มีในระบบ
+
 ## สร้างโพสต์ในเพจ
 ***Request Body:***
 ```
