@@ -1,15 +1,15 @@
 package main
 
-import (
-	"api-for-shops-on-facebook-page/public"
-)
+// import (
+// 	"api-for-shops-on-facebook-page/public"
+// )
 
-func main() {
-	// r := gin.Default()
+// func main() {
+// 	// r := gin.Default()
 
-	// routers.FacebookAPI(r)
+// 	// routers.FacebookAPI(r)
 
-	// r.Run(configs.LoadEnv().AppPort)
+// 	// r.Run(configs.LoadEnv().AppPort)
 
-	public.Index()
-}
+// 	// public.Index()
+// }

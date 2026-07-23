@@ -1,7 +1,7 @@
-package facebookcontroller
+package http
 
 import (
-	"api-for-shops-on-facebook-page/configs"
+	"api-for-shops-on-facebook-page/internal/module/conversation_facebook/domain"
 	facebookmodel "api-for-shops-on-facebook-page/models/facebook-model"
 	facebookservices "api-for-shops-on-facebook-page/services/facebook-service"
 	"encoding/json"
@@ -13,49 +13,14 @@ import (
 	"github.com/huandu/facebook/v2"
 )
 
-// ดึงข้อมูลของเพจ เช่น ชื่อเพจ, id page
-func FacebookPageGetInfo(ctx *gin.Context) {
-	session, err := facebookservices.FacebookInit()
+type ConversationFacebookHttp struct {
+	usecase domain.ConversationFacebookUsecase
+}
 
-	if err != nil {
-		ctx.AbortWithStatusJSON(
-			http.StatusBadRequest,
-			gin.H{
-				"status":  false,
-				"message": "error",
-				"data":    err,
-			},
-		)
-		return
+func NewConversationFacebookHttp(usecase domain.ConversationFacebookUsecase) *ConversationFacebookHttp {
+	return &ConversationFacebookHttp{
+		usecase: usecase,
 	}
-
-	res, err := session.Get("/me", facebook.Params{
-		"fields": "id,name",
-	})
-
-	if err != nil {
-		ctx.AbortWithStatusJSON(
-			http.StatusBadRequest,
-			gin.H{
-				"status":  false,
-				"message": "error",
-				"data":    err,
-			},
-		)
-		return
-	}
-
-	ctx.AbortWithStatusJSON(
-		http.StatusOK,
-		gin.H{
-			"status":  true,
-			"message": "success",
-			"data": gin.H{
-				"id":   res.GetField("id"),
-				"name": res.GetField("name"),
-			},
-		},
-	)
 }
 
 // ดึงข้อมูลการสนทนาของเพจ Facebook
@@ -319,48 +284,5 @@ func FacebookPageSendMessage(ctx *gin.Context) {
 		)
 
 	}
-
-}
-
-// ตรวจสอบยืนยันการทำงานของ webhooks
-func GetWebhookController(ctx *gin.Context) {
-	mode := ctx.Query("hub.mode")
-	webhook_token := ctx.Query("hub.verify_token")
-	challenge := ctx.Query("hub.challenge")
-
-	fbConfig := configs.FacebookConfig()
-
-	if mode == "subscribe" && webhook_token == fbConfig.FacebookWebhookToken {
-		ctx.String(
-			http.StatusOK,
-			challenge,
-		)
-		return
-	}
-
-	ctx.Status(
-		http.StatusForbidden,
-	)
-}
-
-// รับข้อความจาก web hooks เช่น การแจ้งเตือน
-func PostWebhookController(ctx *gin.Context) {
-	var body map[string]interface{}
-
-	err := ctx.ShouldBindJSON(&body)
-
-	if err != nil {
-		ctx.Status(
-			http.StatusBadGateway,
-		)
-		return
-	}
-
-	log.Printf("\n[Webhooks] ---\n\n")
-
-	ctx.String(
-		http.StatusOK,
-		"EVENT_RECEVIVED",
-	)
 
 }

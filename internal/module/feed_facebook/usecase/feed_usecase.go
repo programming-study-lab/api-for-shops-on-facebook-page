@@ -32,7 +32,7 @@ func (feed *feedFacebookUsecase) FeedCreate(ctx context.Context, feedFacebook *d
 	var result map[string]interface{}
 
 	if err := json.Unmarshal(*res, &result); err != nil {
-		errorMessage := fmt.Errorf("[WARNING] feed_facebook_adapter.go(FeedList) Json Decode ล้มเหลว:  %w", err)
+		errorMessage := fmt.Errorf("[WARNING] feed_facebook_adapter.go(FeedCreate) Json Decode ล้มเหลว:  %w", err)
 		log.Fatalln(errorMessage)
 
 		return nil, errorMessage
@@ -54,6 +54,29 @@ func (feed *feedFacebookUsecase) FeedList(ctx context.Context) (interface{}, err
 
 	if err := json.Unmarshal(*res, &result); err != nil {
 		errorMessage := fmt.Errorf("[WARNING] feed_facebook_adapter.go(FeedList) Json Decode ล้มเหลว:  %w", err)
+		log.Fatalln(errorMessage)
+
+		return nil, errorMessage
+	}
+
+	return &result, nil
+}
+
+func (feed *feedFacebookUsecase) FeedUpdate(ctx context.Context, feedId *string, feedFacebook *domain.FeedFacebook) (interface{}, error) {
+	// adapter.FeedCreate(ctx, feedFacebook)
+	res, err := feed.adapter.FeedUpdate(ctx, feedId, feedFacebook)
+
+	if err != nil {
+		errorMessage := fmt.Errorf("[WARNING] feed_usecase.go(FeedUpdate): %w", err)
+		log.Fatalln(errorMessage)
+
+		return nil, errorMessage
+	}
+
+	var result map[string]interface{}
+
+	if err := json.Unmarshal(*res, &result); err != nil {
+		errorMessage := fmt.Errorf("[WARNING] feed_facebook_adapter.go(FeedUpdate) Json Decode ล้มเหลว:  %w", err)
 		log.Fatalln(errorMessage)
 
 		return nil, errorMessage

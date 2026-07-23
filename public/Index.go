@@ -1,20 +1,12 @@
 package public
 
-// import (
-// 	"api-for-shops-on-facebook-page/configs"
-// 	"api-for-shops-on-facebook-page/middlewares"
-// 	"api-for-shops-on-facebook-page/routers"
+func Index() {
 
-// 	"github.com/gin-gonic/gin"
-// )
+	// r := gin.Default()
 
-// func Index() {
+	// r.Use(middlewares.SecurityHeaders()) // HTTP Header
 
-// 	// r := gin.Default()
+	// routers.FacebookAPI(r) // router api
 
-// 	// r.Use(middlewares.SecurityHeaders()) // HTTP Header
-
-// 	// routers.FacebookAPI(r) // router api
-
-// 	// r.Run(configs.LoadEnv().AppPort) // run server
-// }
+	// r.Run(configs.LoadEnv().AppPort) // run server
+}

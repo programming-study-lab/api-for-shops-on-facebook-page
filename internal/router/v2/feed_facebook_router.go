@@ -11,5 +11,6 @@ func FeedFacebookRouter(groupV1 *gin.RouterGroup, handler *http.FeetFacebookHttp
 	{
 		feed.POST("/", handler.FeedCreate)
 		feed.GET("/", handler.FeedList)
+		feed.PATCH("/:page_post_id", handler.FeedUpdate)
 	}
 }

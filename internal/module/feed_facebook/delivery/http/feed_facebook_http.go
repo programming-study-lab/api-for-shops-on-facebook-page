@@ -88,3 +88,52 @@ func (uc *FeetFacebookHttp) FeedList(ctx *gin.Context) {
 		},
 	)
 }
+
+func (uc *FeetFacebookHttp) FeedUpdate(ctx *gin.Context) {
+
+	feedFacebook := &feedfacebookdto.FeedFacebookDTO{}
+
+	if err := ctx.ShouldBindBodyWithJSON(&feedFacebook); err != nil {
+		errorMessage := fmt.Errorf("[WARNING] feed_facebook_http.go(FeedUpdate): %w", err)
+		log.Fatalln(errorMessage)
+
+		ctx.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				"status":  true,
+				"message": "success",
+				"data":    errorMessage,
+			},
+		)
+		return
+	}
+
+	feedId := ctx.Param("page_post_id")
+	// fmt.Printf("\n[test] %s\n", feedFacebook.ToDomain)
+
+	res, err := uc.usecase.FeedUpdate(ctx, &feedId, feedFacebook.ToDomain())
+
+	if err != nil {
+		errorMessage := fmt.Errorf("[WARNING] feed_facebook_http.go(FeedUpdate): %w", err)
+		log.Fatalln(errorMessage)
+
+		ctx.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				"status":  true,
+				"message": "success",
+				"data":    errorMessage,
+			},
+		)
+		return
+	}
+
+	ctx.AbortWithStatusJSON(
+		http.StatusOK,
+		gin.H{
+			"status":  true,
+			"message": "success",
+			"data":    &res,
+		},
+	)
+}

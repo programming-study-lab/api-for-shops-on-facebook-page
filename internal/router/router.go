@@ -1,7 +1,7 @@
 package router
 
 import (
-	v1 "api-for-shops-on-facebook-page/internal/router/v1"
+	v2 "api-for-shops-on-facebook-page/internal/router/v2"
 	"net/http"
 	"time"
 
@@ -21,7 +21,7 @@ func NewRouer(engine *gin.Engine, dependencies *Dependencies) *Router {
 }
 
 func (r *Router) Setup() *gin.Engine {
-	groupV1 := r.engine.Group("/api/v1")
+	groupV1 := r.engine.Group("/api/v2")
 	{
 		groupV1.GET("/test", func(ctx *gin.Context) {
 			ctx.JSON(
@@ -33,8 +33,8 @@ func (r *Router) Setup() *gin.Engine {
 				},
 			)
 		})
-		v1.FeedFacebookRouter(groupV1, r.dependencies.Feed)
-		v1.CommentFacebookRouter(groupV1, r.dependencies.Comment)
+		v2.FeedFacebookRouter(groupV1, r.dependencies.Feed)
+		v2.CommentFacebookRouter(groupV1, r.dependencies.Comment)
 	}
 
 	return r.engine

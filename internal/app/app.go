@@ -2,17 +2,24 @@ package app
 
 import (
 	commentapp "api-for-shops-on-facebook-page/internal/app/comment_app"
-	"api-for-shops-on-facebook-page/internal/config"
+	"api-for-shops-on-facebook-page/internal/common/config"
+	"api-for-shops-on-facebook-page/internal/infrastructure/server"
 	feedAdapter "api-for-shops-on-facebook-page/internal/module/feed_facebook/adapter/feed_facebook_adapter.go"
 	feedHTTP "api-for-shops-on-facebook-page/internal/module/feed_facebook/delivery/http"
 	feedUsecase "api-for-shops-on-facebook-page/internal/module/feed_facebook/usecase"
 	"api-for-shops-on-facebook-page/internal/router"
+	"api-for-shops-on-facebook-page/routers"
 
 	"github.com/gin-gonic/gin"
 )
 
 func Run() {
+
+	gin.SetMode(gin.ReleaseMode)
+
 	engine := gin.Default()
+
+	engine.Use(gin.Recovery())
 
 	fbConfig := config.LoadFacebookConfig()
 
@@ -33,7 +40,15 @@ func Run() {
 	router := router.NewRouer(engine, dependencies)
 	rEngine := router.Setup()
 
-	rEngine.Run(":5000")
+	routers.FacebookAPI(rEngine) // router api
+
+	appConfig := config.LoadAppConfig()
+	srv := server.NewServer(&appConfig.AppAddress, &appConfig.AppPort, rEngine)
+
+	server := srv.Run()
+	srv.Close(server)
+
+	// rEngine.Run(":5000")
 
 }
 

@@ -3,7 +3,8 @@ package domain
 import "context"
 
 type CommentFacebook struct {
-	FeedId string
+	FeedId    string
+	CommentId string
 }
 
 type CommentFacebookAdapter interface {

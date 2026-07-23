@@ -1,7 +1,7 @@
 package commentapp
 
 import (
-	"api-for-shops-on-facebook-page/internal/config"
+	"api-for-shops-on-facebook-page/internal/common/config"
 	adapter "api-for-shops-on-facebook-page/internal/module/comment_facebook/adapter/comment_facebook_adapter"
 	"api-for-shops-on-facebook-page/internal/module/comment_facebook/delivery/http"
 	"api-for-shops-on-facebook-page/internal/module/comment_facebook/usecase"

@@ -31,12 +31,6 @@ func (uc *CommentFacebookHttp) CommentList(ctx *gin.Context) {
 		return
 	}
 
-	fmt.Printf("\n[test] %s\n", commentModelDTO.FeedId)
-
-	// feedDomain := &domain.CommentFacebook{
-	// FeedId: feedId,
-	// }
-
 	res, err := uc.usecase.CommentList(ctx, commentModelDTO.ToDomain())
 
 	if err != nil {
