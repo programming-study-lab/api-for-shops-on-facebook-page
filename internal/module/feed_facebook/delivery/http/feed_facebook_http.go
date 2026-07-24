@@ -23,8 +23,12 @@ func NewFeedFacebookHttp(usecase domain.FeedFacebookUsecase) *FeetFacebookHttp {
 func (uc *FeetFacebookHttp) FeedCreate(ctx *gin.Context) {
 
 	feedFacebook := &feedfacebookdto.FeedFacebookDTO{}
+	test := map[string]interface{}{
+		"message": "",
+	}
 
-	if err := ctx.ShouldBindBodyWithJSON(&feedFacebook); err != nil {
+	if err := ctx.ShouldBind(&feedFacebook); err != nil {
+		// if err := ctx.ShouldBindBodyWithJSON(&feedFacebook); err != nil {
 		errorMessage := fmt.Errorf("[WARNING] feed_facebook_http.go(FeedCreate): %w", err)
 		log.Fatalln(errorMessage)
 
@@ -39,7 +43,8 @@ func (uc *FeetFacebookHttp) FeedCreate(ctx *gin.Context) {
 		return
 	}
 
-	// fmt.Printf("\n[test] %s\n", feed)
+	fmt.Printf("\n[test] %s\n", test)
+	fmt.Printf("\n[test] %s\n", fmt.Sprint(feedFacebook))
 
 	res, err := uc.usecase.FeedCreate(ctx, feedFacebook.ToDomain())
 
@@ -115,6 +120,54 @@ func (uc *FeetFacebookHttp) FeedUpdate(ctx *gin.Context) {
 
 	if err != nil {
 		errorMessage := fmt.Errorf("[WARNING] feed_facebook_http.go(FeedUpdate): %w", err)
+		log.Fatalln(errorMessage)
+
+		ctx.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				"status":  true,
+				"message": "success",
+				"data":    errorMessage,
+			},
+		)
+		return
+	}
+
+	ctx.AbortWithStatusJSON(
+		http.StatusOK,
+		gin.H{
+			"status":  true,
+			"message": "success",
+			"data":    &res,
+		},
+	)
+}
+
+func (uc *FeetFacebookHttp) FeedPhotoCreate(ctx *gin.Context) {
+
+	feedFacebook := &feedfacebookdto.FeedFacebookDTO{}
+
+	if err := ctx.ShouldBindBodyWithJSON(&feedFacebook); err != nil {
+		errorMessage := fmt.Errorf("[WARNING] feed_facebook_http.go(FeedCreate): %w", err)
+		log.Fatalln(errorMessage)
+
+		ctx.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				"status":  true,
+				"message": "success",
+				"data":    errorMessage,
+			},
+		)
+		return
+	}
+
+	// fmt.Printf("\n[test] %s\n", feed)
+
+	res, err := uc.usecase.FeedCreate(ctx, feedFacebook.ToDomain())
+
+	if err != nil {
+		errorMessage := fmt.Errorf("[WARNING] feed_facebook_http.go(FeedCreate): %w", err)
 		log.Fatalln(errorMessage)
 
 		ctx.AbortWithStatusJSON(

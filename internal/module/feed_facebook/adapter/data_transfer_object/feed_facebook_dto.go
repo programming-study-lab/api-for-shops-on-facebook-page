@@ -5,45 +5,65 @@ import (
 )
 
 type FeedFacebookDTO struct {
-	Message   string            `json:"message"`
-	Published bool              `json:"published"`
-	Privacy   *PrivacyParamsDTO `json:"privacy"`
+	Message               *string           `json:"message" form:"message"`
+	Published             *bool             `json:"published" form:"published"`
+	Privacy               *PrivacyParamsDTO `json:"privacy" form:"privacy"`
+	AttachedMediaAttached *string           `json:"attached_media" form:"attached_media"`
 }
 
 type PrivacyParamsDTO struct {
-	Value string `json:"value"`
+	Value *string `json:"value"`
+}
+
+type AttachedMediaAttachedParams struct {
+	MediaFBId *string `json:"media_fbid" form:"media_fbid"`
 }
 
 func (feedDTO *FeedFacebookDTO) ToDomain() *domain.FeedFacebook {
-	if feedDTO.Privacy == nil {
-		return &domain.FeedFacebook{
-			Message:   feedDTO.Message,
-			Published: feedDTO.Published,
-		}
+	feedDomain := &domain.FeedFacebook{}
+
+	if feedDTO.Message != nil {
+		feedDomain.Message = feedDTO.Message
 	}
 
-	return &domain.FeedFacebook{
-		Message:   feedDTO.Message,
-		Published: feedDTO.Published,
-		Privacy: &domain.PrivacyParams{
-			Value: feedDTO.Privacy.Value,
-		},
+	if feedDTO.Published != nil {
+		feedDomain.Published = feedDTO.Published
 	}
+
+	if feedDTO.Privacy != nil {
+
+		feedDomain.Privacy = &domain.PrivacyParams{
+			Value: feedDTO.Privacy.Value,
+		}
+
+	}
+
+	if feedDTO.AttachedMediaAttached != nil {
+		feedDomain.AttachedMediaAttached = feedDTO.AttachedMediaAttached
+	}
+
+	return feedDomain
+
 }
 
 func (feedDTO *FeedFacebookDTO) FromDomain(feedDomain *domain.FeedFacebook) *FeedFacebookDTO {
-	if feedDomain.Privacy == nil {
-		return &FeedFacebookDTO{
-			Message:   feedDomain.Message,
-			Published: feedDomain.Published,
+	if feedDomain.Message != nil {
+		feedDTO.Message = feedDomain.Message
+	}
+	if feedDomain.Published != nil {
+		feedDTO.Published = feedDomain.Published
+	}
+
+	if feedDomain.Privacy != nil {
+		feedDTO.Privacy = &PrivacyParamsDTO{
+			Value: feedDomain.Privacy.Value,
 		}
 	}
-	return &FeedFacebookDTO{
-		Message:   feedDomain.Message,
-		Published: feedDomain.Published,
-		Privacy: &PrivacyParamsDTO{
-			Value: feedDomain.Privacy.Value,
-		},
+
+	if feedDomain.AttachedMediaAttached != nil {
+		feedDTO.AttachedMediaAttached = feedDomain.AttachedMediaAttached
 	}
+
+	return feedDTO
 
 }

@@ -31,6 +31,9 @@ func (fbConfig *FeedFacebookAdapter) FeedCreate(ctx context.Context, feedBody *d
 	url += "access_token=" + fbConfig.fbConfig.AccessToken
 	// url += "&" + ""
 
+	// fmt.Printf("\n[debug] %s\n", feedBody)
+	// return nil, nil
+
 	feedDTO := &feedfacebookdto.FeedFacebookDTO{}
 
 	feed := feedDTO.FromDomain(feedBody)
@@ -126,3 +129,8 @@ func (fbConfig *FeedFacebookAdapter) FeedUpdate(ctx context.Context, feedId *str
 
 	return &body, nil
 }
+
+// func (fbConfig *FeedFacebookAdapter) FeedPhotoCreate(ctx context.Context, feedFacebook *domain.FeedFacebook) (interface{}, error) {
+
+// 	return nil, nil
+// }

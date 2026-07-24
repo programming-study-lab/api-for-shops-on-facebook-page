@@ -2,6 +2,7 @@ package app
 
 import (
 	commentapp "api-for-shops-on-facebook-page/internal/app/comment_app"
+	photoapp "api-for-shops-on-facebook-page/internal/app/photo_app"
 	"api-for-shops-on-facebook-page/internal/common/config"
 	"api-for-shops-on-facebook-page/internal/infrastructure/server"
 	feedAdapter "api-for-shops-on-facebook-page/internal/module/feed_facebook/adapter/feed_facebook_adapter.go"
@@ -37,6 +38,12 @@ func Run() {
 	commentHttp := comment.Run("enable")
 	dependencies.Comment = commentHttp // dependencies
 
+	// photo
+	photo := photoapp.NewPhotoFacebookApp(fbConfig)
+	photoHttp := photo.Run("enable")
+	dependencies.Photo = photoHttp
+
+	// router
 	router := router.NewRouer(engine, dependencies)
 	rEngine := router.Setup()
 

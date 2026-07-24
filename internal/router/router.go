@@ -35,6 +35,7 @@ func (r *Router) Setup() *gin.Engine {
 		})
 		v2.FeedFacebookRouter(groupV1, r.dependencies.Feed)
 		v2.CommentFacebookRouter(groupV1, r.dependencies.Comment)
+		v2.PhotoFacebookRouter(groupV1, r.dependencies.Photo)
 	}
 
 	return r.engine
